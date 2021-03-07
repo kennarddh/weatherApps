@@ -1,8 +1,6 @@
 <?php
 
-use function PHPSTORM_META\type;
-
-require_once("component/db.php");
+    require_once("component/db.php");
 
     date_default_timezone_set('Asia/Jakarta');
 
