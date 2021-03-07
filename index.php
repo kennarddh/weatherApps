@@ -48,7 +48,7 @@
     else
     {
         echo "<br>Gagal";
-        print_r([$city, type($response), $time]);
+        print_r([$city, $response, $time]);
     }
 
 ?>
