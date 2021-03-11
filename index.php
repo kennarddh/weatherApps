@@ -23,9 +23,9 @@
     $response = curl_exec($curl);
 
     curl_close($curl);
-    echo $response;
 
-    echo "<br><br>";
+
+
 
     function get_time($add) {
         $m = date('m');
@@ -43,12 +43,57 @@
     $query = $conn->query($sql);
     if ($query)
     {
-        echo "<br>Berhasil";
     }
     else
     {
-        echo "<br>Gagal";
         print_r([$city, $response, $time]);
     }
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="asset/bootstrap-5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="asset/css/style.css">
+    <script src="asset/bootstrap-5/js/bootstrap.min.js"></script>
+    <title>weather</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="nav-item" id="navbarSupportedContent">
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+            <div class="nav item">
+                <p>20/20/2020</p>
+            </div>
+            <div class="nav-item">
+                <form action="" method="get">
+                    <div class="form-check form-switch">
+                        <label for="flexSwitchCheckDefault">C</label>
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" style="width: 100px; height: 50px;" checked>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="Absolute-Center is-Responsive">
+                <div class="col-sm-12 col-md-10 col-md-offset-1 icon">
+                    <img class="weather-icon" src="https://assets.weatherstack.com/images/wsymbols01_png_64/wsymbol_0004_black_low_cloud.png" alt="">       
+                    30&deg;
+
+                    <p class="humidity">humidty 10%</p>
+                </div>  
+            </div>    
+        </div>
+    </div>
+</body>
+</html>
