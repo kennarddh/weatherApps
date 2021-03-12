@@ -29,3 +29,11 @@ div.well{
     left: -100px;
     top: 300px;
 }
+.location {
+    font-size: 15px;
+}
+#temperature {
+    position: absolute;
+    top: 80px;
+    left: 200px;
+}
