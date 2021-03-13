@@ -1,10 +1,7 @@
 <?php
-
     require_once("component/db.php");
 
     date_default_timezone_set('Asia/Jakarta');
-
-
 
     function get_time($add) {
         $m = date('m');
@@ -16,53 +13,69 @@
         $time = mktime($h + $add,$i,$s,$m,$d,$y);
         return $time;
     }
-    // $time = get_time(6);
-    // $city = explode(",", json_decode($response, true)["request"]["query"])[0];
-    // $sql = "INSERT INTO weather VALUES ('', '$city', '$response', '$time')";
-    // $query = $conn->query($sql);
 
-    // if ($query)
-    // {
+    $success = false;
+    
+    if (!isset($_GET["search"]))
+    {
+        $search = "uk";
 
-    // }
-    // else
-    // {
-    //     print_r([$city, $response, $time]);
-    // }
+        $_GET["submit"] = true;
+    }
 
     if (isset($_GET["submit"]))
     {
-        $search = $_GET["search"];
-        $apiKey = "8d31a59241d10e47a054c39562bf0329";
+        if (!isset($_GET["search"]))
+        {
+            $search = "uk";
+        }
+        else
+        {
+            $search = $_GET["search"];
+        }
 
+        $apiKey = "e1bc79cd4e6b64cc8d2ba46bec983b61";
+        
         $curl = curl_init();
-
+        
         curl_setopt_array($curl, array(
-        CURLOPT_URL => 'http://api.weatherstack.com/current?access_key=' . $apiKey . '&query=' . $search,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-        CURLOPT_HTTPHEADER => array(
-            'Cookie: __cfduid=df3376d14ce595c39624634958ad203b21615087088'
-        ),
+            CURLOPT_URL => 'http://api.weatherstack.com/current?access_key=' . $apiKey . '&query=' . $search,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Cookie: __cfduid=df3376d14ce595c39624634958ad203b21615087088'
+            ),
         ));
 
         $response = json_decode(curl_exec($curl), true);
         
         curl_close($curl);
 
-        $city = $response["location"]["name"];
-        $location = $response["request"]["query"];
-        $image = $response["current"]["weather_icons"][0];
-        $imageAlt = $response["current"]["weather_descriptions"][0];
-        $humidity = $response["current"]["humidity"];
-        $temperature = $response["current"]["temperature"];
-        $observationTime = $response["current"]["observation_time"];
-        $localTime = $response["location"]["localtime"];
+        if (isset($response["success"]))
+        {
+            $success = false;
+
+            $errorType = implode(" ", explode("_", $response["error"]["type"]));
+            $errorInfo = $response["error"]["info"];
+        }
+        else
+        {
+            $success = true;
+
+            $city = $response["location"]["name"];
+            $location = $response["request"]["query"];
+            $image = $response["current"]["weather_icons"][0];
+            $imageAlt = $response["current"]["weather_descriptions"][0];
+            $humidity = $response["current"]["humidity"];
+            $temperature = $response["current"]["temperature"];
+            $observationTime = $response["current"]["observation_time"];
+            $localTime = $response["location"]["localtime"];
+        }
         
     }
 ?>
@@ -152,31 +165,39 @@
                     <button class="btn btn-outline-primary" name="submit" type="submit">Search</button>
                 </form>
             </div>
-            <div class="nav item">
-                <p id="localTime">Local Time : <?= $localTime; ?></p>
-            </div>
-            <div class="nav item">
-                <p>Observation Time : <?= $observationTime; ?></p>
-            </div>
-            <div class="nav-item">
-                <form action="" method="get">
-                    <div class="form-check form-switch">
-                        <label for="TemperatureCheck">C</label>
-                        <input class="form-check-input" onclick="changeTemperatureFormat()" type="checkbox" id="TemperatureCheck" style="width: 100px; height: 50px;" checked>
-                    </div>
-                </form>
-            </div>
+            <?php if ($success) { ?>
+                <div class="nav item">
+                    <p id="localTime">Local Time : <?= $localTime; ?></p>
+                </div>
+                <div class="nav item">
+                    <p>Observation Time : <?= $observationTime; ?></p>
+                </div>
+                <div class="nav-item">
+                    <form action="" method="get">
+                        <div class="form-check form-switch">
+                            <label for="TemperatureCheck">C</label>
+                            <input class="form-check-input" onclick="changeTemperatureFormat()" type="checkbox" id="TemperatureCheck" style="width: 100px; height: 50px;" checked>
+                        </div>
+                    </form>
+                </div>
+            <?php } ?>
         </div>
     </nav>
     <div class="container">
         <div class="row">
             <div class="Absolute-Center is-Responsive">
                 <div class="col-sm-12 col-md-10 col-md-offset-1 icon">
-                    <p class="location">Location : <?= $location; ?></p>
-                    <img class="weather-icon" src="<?= $image; ?>" alt="<?= $imageAlt; ?>">       
-                    <div id="temperature">C <?= $temperature; ?>.00&deg;</div>
+                    <?php if ($success) { ?>
+                        <p class="location">Location : <?= $location; ?></p>
+                        <img class="weather-icon" src="<?= $image; ?>" alt="<?= $imageAlt; ?>">       
+                        <div id="temperature">C <?= $temperature; ?>.00&deg;</div>
 
-                    <p class="humidity">humidity <?= $humidity; ?>%</p>
+                        <p class="humidity">humidity <?= $humidity; ?>%</p>
+                    <?php } else { ?>
+                        <h2><?= $errorType; ?></h2>
+                        <h2><br></h2>
+                        <h2><?= $errorInfo; ?></h2>
+                    <?php } ?>
                 </div>  
             </div>    
         </div>
