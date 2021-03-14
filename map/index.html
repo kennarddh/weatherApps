@@ -1,0 +1,185 @@
+<html>
+    <head>
+	<title> milestones </title>
+	<style>
+            body { margin: 0; padding: 0; }
+            #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        </style>
+    <head>
+    <body>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+        <div id="map"></div>
+        <script>
+
+            mapboxgl.accessToken = 'pk.eyJ1Ijoia2VydGlqYXlhbmxhYnMiLCJhIjoiY2tscDhwY2VrMTBjYjJxbzZhN2thMXlmbCJ9.I9pj595PL4XI-SxZaQ_rLQ';
+
+            var map = new mapboxgl.Map({
+                container: 'map',
+                center: [119.80979, -4.451402],
+                zoom: 5,
+                style: {
+                    version: 8,
+                    sources: {
+                        osm: {
+                            type: 'raster',
+                            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                            tileSize: 256,
+                            attribution: 'Map tiles by <a target="_top" rel="noopener" href="https://tile.openstreetmap.org/">OpenStreetMap tile servers</a>, under the <a target="_top" rel="noopener" href="https://operations.osmfoundation.org/policies/tiles/">tile usage policy</a>. Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>',
+                        },
+                    },
+                    layers: [{
+                        id: 'osm',
+                        type: 'raster',
+                        source: 'osm',
+                    }],
+                },
+            });
+
+            map.on('load', function () {
+            map.addSource('multiple-lines-source', {
+                'type': 'geojson',
+                'data': {
+                'type': 'FeatureCollection',
+                'features': [
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [109.652273, -6.93565 ]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [107.751833, -6.972061]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [106.827195, -6.225]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [117.978508, 0.980241]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [124.897339, -9.095645]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [106.96162,-6.291081]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [101.5475811,0.5004112]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [98.6738261,3.5896654]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [106.6385036,-6.1724828]
+                                ]
+                            }
+                        },
+                        {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': [
+                                    [109.6564828434939, -6.926704389557727],
+                                    [110.45952907126915,-7.04583375]
+                                ]
+                            }
+                        },
+                    ],            
+                },
+            });
+
+            map.addLayer({
+                'id': 'multiple-lines-layer',
+                'type': 'line',
+                'source': 'multiple-lines-source',
+                'layout': {
+                },
+                'paint': {
+                    'line-color': 'black',
+                    'line-width': 5,
+                },
+            });
+            });
+            new mapboxgl.Marker().setLngLat([109.652273, -6.93565 ]).addTo(map);
+            new mapboxgl.Marker().setLngLat([107.751833, -6.972061]).addTo(map);
+            new mapboxgl.Marker().setLngLat([106.827195, -6.225]).addTo(map);
+            new mapboxgl.Marker().setLngLat([117.978508, 0.980241]).addTo(map);
+            new mapboxgl.Marker().setLngLat([124.897339, -9.095645]).addTo(map);
+            new mapboxgl.Marker().setLngLat([106.96162,-6.291081]).addTo(map);
+            new mapboxgl.Marker().setLngLat([101.5475811,0.5004112]).addTo(map);
+            new mapboxgl.Marker().setLngLat([98.6738261,3.5896654]).addTo(map);            
+            new mapboxgl.Marker().setLngLat([106.6385036,-6.1724828]).addTo(map);            
+            new mapboxgl.Marker().setLngLat([110.45952907126915,-7.04583375]).addTo(map); 
+        </script>
+        
+
+    </body>
+</html>
