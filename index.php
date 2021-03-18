@@ -27,7 +27,7 @@
     {
         if (!isset($_GET["search"]))
         {
-            $search = "uk";
+            $search = "jakarta";
         }
         else
         {
@@ -68,13 +68,14 @@
             $success = true;
 
             $city = $response["location"]["name"];
+            $country = $response["location"]["country"];
             $location = $response["request"]["query"];
             $image = $response["current"]["weather_icons"][0];
             $imageAlt = $response["current"]["weather_descriptions"][0];
             $humidity = $response["current"]["humidity"];
             $temperature = $response["current"]["temperature"];
-            $observationTime = $response["current"]["observation_time"];
             $localTime = $response["location"]["localtime"];
+            $observationTime = $localTime;
         }
         
     }
@@ -88,6 +89,9 @@
     <link rel="stylesheet" href="asset/bootstrap-5/css/bootstrap.min.css">
     <link rel="stylesheet" href="asset/css/style.css">
     <script src="asset/bootstrap-5/js/bootstrap.min.js"></script>
+    <script src="asset/js/map.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet'>
     <script>
         var localTimeGet, localTime;
         var t, d;
@@ -154,14 +158,14 @@
             }
         }
     </script>
-    <title>weather</title>
+    <title>Weather</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <div class="nav-item" id="navbarSupportedContent">
                 <form class="d-flex">
-                    <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                    <input class="form-control me-2" id="search" type="search" name="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-primary" name="submit" type="submit">Search</button>
                 </form>
             </div>
@@ -188,7 +192,7 @@
             <div class="Absolute-Center is-Responsive">
                 <div class="col-sm-12 col-md-10 col-md-offset-1 icon">
                     <?php if ($success) { ?>
-                        <p class="location">Location : <?= $location; ?></p>
+                        <p class="location">Location : <?= $city . ", " . $country; ?></p>
                         <img class="weather-icon" src="<?= $image; ?>" alt="<?= $imageAlt; ?>">       
                         <div id="temperature">C <?= $temperature; ?>.00&deg;</div>
 
@@ -201,6 +205,33 @@
                 </div>  
             </div>    
         </div>
+    </div>
+    <div class="container">
+        <div id="map"></div>
+        <pre id="info"></pre>
+        <script>
+            mapboxgl.accessToken = 'pk.eyJ1IjoidXNlcmdrbmFtZSIsImEiOiJja204bXQyeHcxOWNxMnBxc3J5ZjJuNzRkIn0.eDRDOTM6hVQDgMdxK2UEbg';
+            var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-74.5, 40], // starting position
+            zoom: 9 // starting zoom
+            });
+            
+            map.on('click', function (e) {
+                document.getElementById('info').innerHTML =
+                // e.point is the x, y coordinates of the mousemove event relative
+                // to the top-left corner of the map
+                JSON.stringify(e.point) +
+                '<br />' +
+                // e.lngLat is the longitude, latitude geographical position of the event
+                JSON.stringify(e.lngLat.wrap());
+                // console.log(JSON.stringify(e.point) + '<br />' + JSON.stringify(e.lngLat.wrap()));
+
+                document.getElementById('search').value = e.lngLat.wrap()["lat"] + "," + e.lngLat.wrap()["lng"];
+                console.log(e.lngLat.wrap()["lat"] + "," + e.lngLat.wrap()["lng"]);
+            });
+        </script>
     </div>
 </body>
 </html>
