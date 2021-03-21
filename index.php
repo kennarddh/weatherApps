@@ -10,7 +10,7 @@
         $h = date('H');
         $i = date('i');
         $s = date('s');
-        $time = mktime($h + $add,$i,$s,$m,$d,$y);
+        $time = mktime($h,$i + $add,$s,$m,$d,$y);
         return $time;
     }
 
@@ -34,50 +34,101 @@
             $search = $_GET["search"];
         }
 
+        $search = strtolower($search);
+
         $apiKey = "e1bc79cd4e6b64cc8d2ba46bec983b61";
         
-        $curl = curl_init();
-        
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://api.weatherstack.com/current?access_key=' . $apiKey . '&query=' . $search,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => array(
-                'Cookie: __cfduid=df3376d14ce595c39624634958ad203b21615087088'
-            ),
-        ));
+        $rangeTime = get_time(-10);
 
-        $response = json_decode(curl_exec($curl), true);
-        
-        curl_close($curl);
+        $nowTime = get_time(0);
 
-        if (isset($response["success"]))
+        $sql = "SELECT * FROM `weather` WHERE expire BETWEEN $rangeTime AND $nowTime AND city='$search'";
+
+        $query = $conn->query($sql);
+
+        if ($query->num_rows == 0)
         {
-            $success = false;
+            $curl = curl_init();
+            
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'http://api.weatherstack.com/current?access_key=' . $apiKey . '&query=' . urlencode($search),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET',
+                CURLOPT_HTTPHEADER => array(
+                    'Cookie: __cfduid=df3376d14ce595c39624634958ad203b21615087088'
+                ),
+            ));
 
-            $errorType = implode(" ", explode("_", $response["error"]["type"]));
-            $errorInfo = $response["error"]["info"];
+            $json = curl_exec($curl);
+
+            $response = json_decode($json, true);
+            
+            curl_close($curl);
+
+            if (isset($response["success"]))
+            {
+                $success = false;
+
+                $errorType = implode(" ", explode("_", $response["error"]["type"]));
+                $errorInfo = $response["error"]["info"];
+            }
+            else
+            {
+                $success = true;
+
+                $city = $response["location"]["name"];
+                $country = $response["location"]["country"];
+                $location = $response["request"]["query"];
+                $image = $response["current"]["weather_icons"][0];
+                $imageAlt = $response["current"]["weather_descriptions"][0];
+                $humidity = $response["current"]["humidity"];
+                $temperature = $response["current"]["temperature"];
+                $localTime = $response["location"]["localtime"];
+                $observationTime = $localTime;
+
+                $expire = get_time(0);
+
+                $city = strtolower($city);
+                $country = strtolower($country);
+
+                $sql = "INSERT INTO weather VALUES ('', '$city', '$country', '$json', '$expire')";
+
+                $query = $conn->query($sql);
+            }
         }
         else
         {
-            $success = true;
+            $result = $query->fetch_object();
+            $json = $result->data;
+            $response = json_decode($json, true);
 
-            $city = $response["location"]["name"];
-            $country = $response["location"]["country"];
-            $location = $response["request"]["query"];
-            $image = $response["current"]["weather_icons"][0];
-            $imageAlt = $response["current"]["weather_descriptions"][0];
-            $humidity = $response["current"]["humidity"];
-            $temperature = $response["current"]["temperature"];
-            $localTime = $response["location"]["localtime"];
-            $observationTime = $localTime;
+            if (isset($response["success"]))
+            {
+                $success = false;
+
+                $errorType = implode(" ", explode("_", $response["error"]["type"]));
+                $errorInfo = $response["error"]["info"];
+            }
+            else
+            {
+                $success = true;
+
+                $city = $response["location"]["name"];
+                $country = $response["location"]["country"];
+                $location = $response["request"]["query"];
+                $image = $response["current"]["weather_icons"][0];
+                $imageAlt = $response["current"]["weather_descriptions"][0];
+                $humidity = $response["current"]["humidity"];
+                $temperature = $response["current"]["temperature"];
+                $localTime = $response["location"]["localtime"];
+                $observationTime = $localTime;
+            }
         }
-        
     }
 ?>
 <!DOCTYPE html>
