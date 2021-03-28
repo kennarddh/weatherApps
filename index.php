@@ -90,6 +90,8 @@
                 $temperature = $response["current"]["temperature"];
                 $localTime = $response["location"]["localtime"];
                 $observationTime = $localTime;
+                $locationLat = $response["location"]["lat"];
+                $locationLon = $response["location"]["lon"];
 
                 $expire = get_time(0);
 
@@ -127,6 +129,8 @@
                 $temperature = $response["current"]["temperature"];
                 $localTime = $response["location"]["localtime"];
                 $observationTime = $localTime;
+                $locationLat = $response["location"]["lat"];
+                $locationLon = $response["location"]["lon"];
             }
         }
     }
@@ -257,15 +261,28 @@
             </div>    
         </div>
     </div>
+    <?php if ($success) { ?>
+        <input type="hidden" id="lat" value="<?= $locationLat; ?>">
+        <input type="hidden" id="lon" value="<?= $locationLon; ?>">
+    <?php } else { ?>
+        <input type="hidden" id="lat" value="0">
+        <input type="hidden" id="lon" value="0">
+    <?php } ?>
+    
     <div class="container">
         <div id="map"></div>
         <pre id="info"></pre>
         <script>
+            var lat = parseInt(document.getElementById("lon").value)
+            var lon = parseInt(document.getElementById("lat").value)
+
+            console.log([lon, lat])
+
             mapboxgl.accessToken = 'pk.eyJ1IjoidXNlcmdrbmFtZSIsImEiOiJja204bXQyeHcxOWNxMnBxc3J5ZjJuNzRkIn0.eDRDOTM6hVQDgMdxK2UEbg';
             var map = new mapboxgl.Map({
             container: 'map', // container id
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-74.5, 40], // starting position
+            center: [lat, lon], // starting position
             zoom: 9 // starting zoom
             });
             
